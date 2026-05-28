@@ -1,31 +1,51 @@
+# The display name of the workflow as it appears in the GitHub Actions tab
 name: Playwright Tests
 
+# Defines the trigger (event) that kicks off this automated workflow
 on:
   push:
+    # The pipeline will only run when a push event happens specifically on the 'main' branch
     branches: [ main ]
 
+# Group of one or more jobs that run in this workflow
 jobs:
+  # Unique identifier for the job
   test:
 
+    # The type of virtual machine (runner) the job will execute on
+    # ubuntu-latest provisions a fresh Linux environment hosted by GitHub
     runs-on: ubuntu-latest
 
+    # Strategy allows creating a matrix of job configurations
     strategy:
       matrix:
+        # Defines a variable 'browser' with two values. 
+        # This will spin up TWO separate, parallel jobs: one for chromium, one for firefox.
         browser: [chromium, firefox]
 
+    # The sequence of tasks (steps) to be executed in this job
     steps:
 
+      # Step 1: Clones your repository code onto the runner VM so the pipeline can access it
+      # Uses the official GitHub Checkout action (version 4)
       - uses: actions/checkout@v4
 
+      # Step 2: Sets up a Node.js environment on the runner VM
       - uses: actions/setup-node@v4
         with:
+          # Specifies the exact Node.js version to use (Version 20 is a stable LTS release)
           node-version: 20
 
+      # Step 3: Installs the project dependencies listed in your package.json file
       - name: Install Dependencies
         run: npm install
 
+      # Step 4: Installs the actual browser binaries required by Playwright
+      # The '--with-deps' flag tells it to also install any missing operating system dependencies
       - name: Install Browsers
         run: npx playwright install --with-deps
 
+      # Step 5: Executes your Playwright test suite
+      # Because of the matrix strategy above, Playwright will automatically target the correct browser
       - name: Run Tests
         run: npx playwright test
