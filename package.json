@@ -1,0 +1,21 @@
+{
+  "name": "enterprise-qa-framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.1"
+  },
+  "dependencies": {
+    "allure-playwright": "^3.9.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0",
+    "winston": "^3.19.0"
+  }
+}
