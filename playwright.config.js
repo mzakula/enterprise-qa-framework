@@ -12,7 +12,7 @@ module.exports = defineConfig({
   fullyParallel: true,
 
   use: {
-    baseURL: process.env.BASE_URL,
+    baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
 
     headless: true,
 

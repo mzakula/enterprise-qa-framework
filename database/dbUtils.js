@@ -1,11 +1,12 @@
+require('dotenv').config();
 const { Client } = require('pg');
 
 const client = new Client({
-  user: 'admin',
-  host: 'localhost',
-  database: 'automation',
-  password: 'admin',
-  port: 5432,
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT || 5432),
+  user: process.env.DB_USER || 'admin',
+  password: process.env.DB_PASSWORD || 'admin',
+  database: process.env.DB_NAME || 'automation'
 });
 
 async function connectDB() {

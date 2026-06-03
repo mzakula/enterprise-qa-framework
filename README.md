@@ -41,8 +41,34 @@ GitHub Actions
 * Claude
 * ChatGPT
 
-  Framework Design Decisions
-Why Playwright?
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy the environment template:
+
+```bash
+copy .env.example .env
+```
+
+3. Set `BASE_URL` to your target application or leave the default for the sample Sauce Demo flow.
+
+## Run tests
+
+```bash
+npm test
+npm run test:ui
+npm run test:api
+npm run test:integration
+```
+
+## Framework Design Decisions
+
+### Why Playwright?
 
 Playwright was selected because it provides reliable cross-browser automation, automatic waiting mechanisms, network interception, API testing capabilities, and parallel execution support. Compared to traditional Selenium implementations, Playwright significantly reduces flaky tests and simplifies modern web application testing.
 

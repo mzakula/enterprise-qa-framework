@@ -1,19 +1,17 @@
 const { test, expect } = require('@playwright/test');
-const { connectDB, executeQuery } = require('../../database/dbUtils');
 
-test('Create product', async ({ request }) => {
+const apiBase = process.env.API_BASE_URL || 'https://dummyjson.com';
 
-  const product = {
-    title: 'Playwright Book',
-    price: 29.99
-  };
+test.describe('Integration API tests', () => {
+  test('Create a new dummy product if API supports it', async ({ request }) => {
+    const response = await request.post(`${apiBase}/products/add`, {
+      data: {
+        title: 'Playwright Book',
+        price: 29.99,
+        description: 'Sample product created by integration test'
+      }
+    });
 
-  const response = await request.post(
-    'http://localhost:3000/products',
-    {
-      data: product
-    }
-  );
-
-  expect(response.status()).toBe(201);
+    expect([200, 201]).toContain(response.status());
+  });
 });

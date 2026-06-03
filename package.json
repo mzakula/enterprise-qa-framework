@@ -8,6 +8,7 @@
   "test:ui": "playwright test tests/ui",
   "test:api": "playwright test tests/api",
   "test:integration": "playwright test tests/integration",
+  "newman": "newman run ./postman/collections/DummyJSON_Regression_Collection.json -e ./postman/environments/DummyJSON_QA_Environment.json",
   "report": "playwright show-report",
   "allure:generate": "allure generate allure-results --clean",
   "allure:open": "allure open"

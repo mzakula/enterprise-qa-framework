@@ -4,7 +4,8 @@ name: Playwright Tests
 # Defines the trigger (event) that kicks off this automated workflow
 on:
   push:
-    # The pipeline will only run when a push event happens specifically on the 'main' branch
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 # Group of one or more jobs that run in this workflow
@@ -49,3 +50,12 @@ jobs:
       # Because of the matrix strategy above, Playwright will automatically target the correct browser
       - name: Run Tests
         run: npx playwright test
+
+      - name: Run Postman Tests
+
+        run: |
+         npm install -g newman
+
+         newman run \
+         ./postman/collections/DummyJSON_Regression_Collection.json \
+         -e ./postman/environments/DummyJSON_QA_Environment.json
