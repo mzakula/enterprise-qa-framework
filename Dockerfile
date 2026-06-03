@@ -1,9 +1,3 @@
-# Official Playwright image with browsers preinstalled
-FROM mcr.microsoft.com/playwright:v1.44.0
-
-# Create working directory inside container
-WORKDIR /app
-
 # Copy package files first for Docker layer caching
 COPY package*.json ./
 
