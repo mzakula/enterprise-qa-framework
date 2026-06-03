@@ -17,7 +17,15 @@ Enterprise-level automation framework built using Playwright and JavaScript with
 
 ## Architecture
 
-UI → API → Database → Reporting → CI/CD
+Playwright UI
+      ↓
+Playwright API
+      ↓
+PostgreSQL
+      ↓
+Reports
+      ↓
+GitHub Actions
 
 ## Technologies
 
