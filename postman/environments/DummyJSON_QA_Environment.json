@@ -1,0 +1,39 @@
+{
+  "id": "d8bf2ebe-0c47-4f4a-8906-4c450d8ed5ea",
+  "name": "DummyJSON QA Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://dummyjson.com",
+      "enabled": true
+    },
+    {
+      "key": "username",
+      "value": "emilys",
+      "enabled": true
+    },
+    {
+      "key": "password",
+      "value": "emilyspass",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-06-03T00:00:00.000Z",
+  "_postman_exported_using": "Postman/10.0.0"
+}
