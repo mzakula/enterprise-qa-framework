@@ -2,6 +2,8 @@ const { test, expect } = require('@playwright/test');
 
 const apiBase = process.env.API_BASE_URL || 'https://dummyjson.com';
 
+// API integration test that validates product creation behavior on the target backend.
+// This verifies that the system supports POST-based record creation and returns a valid success code.
 test.describe('Integration API tests', () => {
   test('Create a new dummy product if API supports it', async ({ request }) => {
     const response = await request.post(`${apiBase}/products/add`, {

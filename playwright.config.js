@@ -1,6 +1,8 @@
 const { defineConfig } = require('@playwright/test');
 require('dotenv').config();
 
+// Common execution settings for local and CI runs.
+// Use .env values to avoid hard-coded URLs and environment-specific behavior.
 module.exports = defineConfig({
 
   testDir: './tests',

@@ -1,3 +1,4 @@
+// Page object for the login screen. Abstracts UI selectors from test logic.
 class LoginPage {
 
   constructor(page) {

@@ -48,14 +48,22 @@ jobs:
 
       # Step 5: Executes your Playwright test suite
       # Because of the matrix strategy above, Playwright will automatically target the correct browser
+      # Forward DB secrets into Playwright so the database integration tests can connect when run in CI.
+      # These values must be configured in GitHub repo secrets under Settings -> Secrets.
       - name: Run Tests
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: npx playwright test
 
+      # Run API regression coverage with Newman using the exported Postman collection and environment.
       - name: Run Postman Tests
-
         run: |
-         npm install -g newman
+          npm install -g newman
 
-         newman run \
-         ./postman/collections/DummyJSON_Regression_Collection.json \
-         -e ./postman/environments/DummyJSON_QA_Environment.json
+          newman run \
+            ./postman/collections/DummyJSON_Regression_Collection.json \
+            -e ./postman/environments/DummyJSON_QA_Environment.json

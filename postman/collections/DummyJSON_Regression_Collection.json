@@ -3,7 +3,8 @@
     "_postman_id": "857571d9-7c1f-4f0b-a7f0-0a9e6d896510",
     "name": "DummyJSON_Regression_Collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "5338454"
+    "_exporter_id": "5338454",
+    "description": "DummyJSON regression collection with authentication, product, user, negative, and schema validation scenarios."
   },
   "item": [
     {
@@ -58,7 +59,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Verify auth succeeds with valid credentials and that a bearer token is stored."
           },
           "response": []
         },
@@ -100,11 +102,13 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Confirm login rejects invalid credentials and returns status 400."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Covers auth scenarios, including successful login and invalid credentials."
     },
     {
       "name": "Products",
@@ -144,7 +148,8 @@
               "path": [
                 "products"
               ]
-            }
+            },
+            "description": "Verify the products endpoint returns a non-empty product list."
           },
           "response": []
         },
@@ -179,7 +184,8 @@
                 "products",
                 "1"
               ]
-            }
+            },
+            "description": "Confirm product retrieval returns the expected item by ID."
           },
           "response": []
         },
@@ -228,7 +234,8 @@
                 "products",
                 "add"
               ]
-            }
+            },
+            "description": "Create a new product and save the generated productId for later requests."
           },
           "response": []
         },
@@ -273,11 +280,13 @@
                 "products",
                 "{{productId}}"
               ]
-            }
+            },
+            "description": "Update a product title and verify the response reflects the change."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Exercises product listing, retrieval, creation, and update endpoints."
     },
     {
       "name": "Users",
@@ -314,7 +323,8 @@
                 "users",
                 "1"
               ]
-            }
+            },
+            "description": "Retrieve a specific user and validate the returned user profile data."
           },
           "response": []
         },
@@ -356,11 +366,13 @@
                   "value": "John"
                 }
               ]
-            }
+            },
+            "description": "Search users by query and verify search results are returned."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Validates user retrieval and search operations."
     },
     {
       "name": "Negative Testing",
@@ -394,7 +406,8 @@
                 "products",
                 "999999"
               ]
-            }
+            },
+            "description": "Request a missing product and verify the API returns 404."
           },
           "response": []
         },
@@ -427,7 +440,8 @@
                 "users",
                 "999999"
               ]
-            }
+            },
+            "description": "Request a missing user and verify the API returns 404."
           },
           "response": []
         },
@@ -460,11 +474,13 @@
                 "auth",
                 "merry"
               ]
-            }
+            },
+            "description": "Attempt an unauthorized request without a token and expect 401."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Verifies failure cases such as invalid IDs and unauthorized access."
     },
     {
       "name": "Schema Validation",
@@ -507,11 +523,13 @@
                 "products",
                 "1"
               ]
-            }
+            },
+            "description": "Validate the product response object against the expected JSON schema."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Ensures critical response payloads conform to schema expectations."
     },
     {
       "name": "Smoke / Regression",
@@ -565,7 +583,8 @@
                 "auth",
                 "login"
               ]
-            }
+            },
+            "description": "Smoke login step for regression runs, verifying token creation."
           },
           "response": []
         },
@@ -604,7 +623,8 @@
               "path": [
                 "products"
               ]
-            }
+            },
+            "description": "Smoke product list step for regression verification."
           },
           "response": []
         },
@@ -639,7 +659,8 @@
                 "products",
                 "1"
               ]
-            }
+            },
+            "description": "Smoke product-by-id validation for regression coverage."
           },
           "response": []
         },
@@ -684,7 +705,8 @@
                 "products",
                 "{{productId}}"
               ]
-            }
+            },
+            "description": "Smoke update product scenario for regression coverage."
           },
           "response": []
         },
@@ -720,7 +742,8 @@
                 "users",
                 "1"
               ]
-            }
+            },
+            "description": "Smoke user retrieval check for regression verification."
           },
           "response": []
         },
@@ -762,7 +785,8 @@
                   "value": "John"
                 }
               ]
-            }
+            },
+            "description": "Smoke user search scenario for regression coverage."
           },
           "response": []
         },
@@ -811,11 +835,13 @@
                 "products",
                 "add"
               ]
-            }
+            },
+            "description": "Smoke product creation step for regression flow."
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Lightweight smoke/regression subset for fast validation runs."
     }
   ]
 }

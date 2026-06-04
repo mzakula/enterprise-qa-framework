@@ -1,3 +1,6 @@
+// Database helpers are intentionally simple to keep integration validation lightweight.
+// The connection parameters are env-driven so test execution can support multiple environments.
+// Local development can use .env, while CI should set real secrets through the runner environment.
 require('dotenv').config();
 const { Client } = require('pg');
 
