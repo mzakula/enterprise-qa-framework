@@ -58,12 +58,32 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: npx playwright test
+      # End of Playwright matrix steps
 
-      # Run API regression coverage with Newman using the exported Postman collection and environment.
+  # Run Newman/Postman once after the Playwright matrix completes.
+  # This job depends on the `test` job so it will only run after the
+  # matrix finishes. Keeping Newman in a separate job prevents duplicate
+  # Newman executions across matrix axes (chromium/firefox).
+  postman:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Newman
+        run: npm install -g newman
+
       - name: Run Postman Tests
         run: |
-          npm install -g newman
-
-          newman run \
-            ./postman/collections/DummyJSON_Regression_Collection.json \
+          # Run the exported Postman collection once using the QA environment
+          newman run ./postman/collections/DummyJSON_Regression_Collection.json \
             -e ./postman/environments/DummyJSON_QA_Environment.json
+      # Run API regression coverage with Newman using the exported Postman collection and environment.
+      # NOTE: Postman/Newman was running inside the matrix which caused it
+      # to execute once per browser (duplicate runs). This step was removed
+      # from the matrix job and moved to a single dedicated `postman` job
+      # below so Newman runs only once after the Playwright matrix completes.
