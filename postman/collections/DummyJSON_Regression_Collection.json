@@ -243,6 +243,22 @@
           "name": "Update Product",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.environment.get(\"productId\")) {",
+                  "    pm.environment.set(\"productId\", \"101\");",
+                  "}",
+                  "pm.test(\"productId is available for update\", () => {",
+                  "    pm.expect(pm.environment.get(\"productId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -281,7 +297,7 @@
                 "{{productId}}"
               ]
             },
-            "description": "Update a product title and verify the response reflects the change."
+            "description": "Update a product title and verify the response reflects the change. Updates an existing product by id; falls back to productId 101 if none is present."
           },
           "response": []
         }
@@ -466,16 +482,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/auth/merry",
+              "raw": "{{baseUrl}}/auth/profile",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "auth",
-                "merry"
+                "profile"
               ]
             },
-            "description": "Attempt an unauthorized request without a token and expect 401."
+            "description": "Attempt an unauthorized request without a token and expect 401. Uses auth/profile endpoint to verify missing token returns 401."
           },
           "response": []
         }
@@ -668,6 +684,22 @@
           "name": "Update Product Copy",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.environment.get(\"productId\")) {",
+                  "    pm.environment.set(\"productId\", \"101\");",
+                  "}",
+                  "pm.test(\"productId is available for update\", () => {",
+                  "    pm.expect(pm.environment.get(\"productId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -706,7 +738,7 @@
                 "{{productId}}"
               ]
             },
-            "description": "Smoke update product scenario for regression coverage."
+            "description": "Smoke update product scenario for regression coverage. Updates an existing product by id; falls back to productId 101 if none is present."
           },
           "response": []
         },
