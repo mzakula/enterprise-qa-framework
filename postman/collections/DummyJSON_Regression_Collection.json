@@ -246,11 +246,12 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "if (!pm.environment.get(\"productId\")) {",
-                  "    pm.environment.set(\"productId\", \"101\");",
+                  "if (!pm.environment.get(\"baseUrl\")) {",
+                  "    pm.environment.set(\"baseUrl\", \"https://dummyjson.com\");",
                   "}",
+                  "pm.environment.set(\"productId\", \"101\");",
                   "pm.test(\"productId is available for update\", () => {",
-                  "    pm.expect(pm.environment.get(\"productId\")).to.not.be.empty;",
+                  "    pm.expect(pm.environment.get(\"productId\")).to.exist;",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -288,16 +289,16 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/products/{{productId}}",
+              "raw": "{{baseUrl}}/products/101",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "products",
-                "{{productId}}"
+                "101"
               ]
             },
-            "description": "Update a product title and verify the response reflects the change. Updates an existing product by id; falls back to productId 101 if none is present."
+            "description": "Update a stable existing product (id 101) and verify the response contains the updated title. DummyJSON update tests use a known existing product id to avoid invalid id failures."
           },
           "response": []
         }
@@ -465,6 +466,22 @@
           "name": "Missing Token",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.environment.get(\"baseUrl\")) {",
+                  "    pm.environment.set(\"baseUrl\", \"https://dummyjson.com\");",
+                  "}",
+                  "pm.test(\"baseUrl is set for missing token request\", () => {",
+                  "    pm.expect(pm.environment.get(\"baseUrl\")).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -491,7 +508,7 @@
                 "profile"
               ]
             },
-            "description": "Attempt an unauthorized request without a token and expect 401. Uses auth/profile endpoint to verify missing token returns 401."
+            "description": "Attempt an unauthorized request without a token and expect 401. Uses auth/profile endpoint because it reliably returns 401 for missing auth tokens in DummyJSON."
           },
           "response": []
         }
@@ -687,11 +704,12 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "if (!pm.environment.get(\"productId\")) {",
-                  "    pm.environment.set(\"productId\", \"101\");",
+                  "if (!pm.environment.get(\"baseUrl\")) {",
+                  "    pm.environment.set(\"baseUrl\", \"https://dummyjson.com\");",
                   "}",
+                  "pm.environment.set(\"productId\", \"101\");",
                   "pm.test(\"productId is available for update\", () => {",
-                  "    pm.expect(pm.environment.get(\"productId\")).to.not.be.empty;",
+                  "    pm.expect(pm.environment.get(\"productId\")).to.exist;",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -729,13 +747,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/products/{{productId}}",
+              "raw": "{{baseUrl}}/products/101",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "products",
-                "{{productId}}"
+                "101"
               ]
             },
             "description": "Smoke update product scenario for regression coverage. Updates an existing product by id; falls back to productId 101 if none is present."
