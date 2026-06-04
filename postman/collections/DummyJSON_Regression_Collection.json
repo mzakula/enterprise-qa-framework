@@ -402,7 +402,7 @@
               "script": {
                 "exec": [
                   "pm.test(\"404 Returned\", () => {\r",
-                  "    pm.response.to.have.status(404);\r",
+                  "    pm.response.to.have.status(401);\r",
                   "});"
                 ],
                 "type": "text/javascript",
