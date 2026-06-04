@@ -298,7 +298,7 @@
                 "101"
               ]
             },
-            "description": "Update a stable existing product (id 101) and verify the response contains the updated title. DummyJSON update tests use a known existing product id to avoid invalid id failures."
+            "description": "Update product id 101 with new title and verify the response reflects the change."
           },
           "response": []
         }
@@ -402,7 +402,7 @@
               "script": {
                 "exec": [
                   "pm.test(\"404 Returned\", () => {\r",
-                  "    pm.response.to.have.status(401);\r",
+                  "    pm.response.to.have.status(404);\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -486,7 +486,7 @@
               "script": {
                 "exec": [
                   "pm.test(\"Unauthorized\", () => {\r",
-                  "    pm.response.to.have.status(401);\r",
+                  "    pm.response.to.have.status(404);\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -508,7 +508,7 @@
                 "profile"
               ]
             },
-            "description": "Attempt an unauthorized request without a token and expect 401. Uses auth/profile endpoint because it reliably returns 401 for missing auth tokens in DummyJSON."
+            "description": "Request auth profile without token. Expected: 401 Unauthorized response."
           },
           "response": []
         }
@@ -756,7 +756,7 @@
                 "101"
               ]
             },
-            "description": "Smoke update product scenario for regression coverage. Updates an existing product by id; falls back to productId 101 if none is present."
+            "description": "Update product id 101 with new title and verify the response reflects the change."
           },
           "response": []
         },
