@@ -36,10 +36,13 @@ jobs:
         with:
           # Specifies the exact Node.js version to use (Version 20 is a stable LTS release)
           node-version: 20
+          # Use built-in npm caching to speed up dependency installs across runs
+          cache: 'npm'
 
       # Step 3: Installs the project dependencies listed in your package.json file
       - name: Install Dependencies
-        run: npm install
+        # Use `npm ci` for reproducible installs in CI and faster execution
+        run: npm ci --prefer-offline --no-audit --no-progress
 
       # Step 4: Installs the actual browser binaries required by Playwright
       # The '--with-deps' flag tells it to also install any missing operating system dependencies
@@ -51,13 +54,51 @@ jobs:
       # Forward DB secrets into Playwright so the database integration tests can connect when run in CI.
       # These values must be configured in GitHub repo secrets under Settings -> Secrets.
       - name: Run Tests
+        # Inject secrets and environment variables for CI runs.
+        # Also pass BASE_URL from secrets to avoid hard-coded endpoints in CI.
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: npx playwright test
+          BASE_URL: ${{ secrets.BASE_URL }}
+        # Run Playwright for the specific browser from the matrix so each job
+        # only runs one browser (true matrix execution). This avoids duplicating
+        # browser runs inside Playwright's own project list.
+        run: |
+          npx playwright test --project=${{ matrix.browser }}
+
+      # Upload artifacts per matrix axis so HTML reports and raw results are
+      # preserved and downloadable from the workflow run.
+      - name: Upload Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: allure-results
+
+      # Upload traces/supplementary test-results only on failure to save space
+      - name: Upload Traces and Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.browser }}
+          path: test-results/
+
+      # Small summary added to the GitHub Actions run summary for quick browsing
+      - name: Publish Test Summary
+        if: always()
+        run: |
+          echo "## Test Execution" >> $GITHUB_STEP_SUMMARY
+          echo "- Browser: ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
       # End of Playwright matrix steps
 
   # Run Newman/Postman once after the Playwright matrix completes.
@@ -75,13 +116,26 @@ jobs:
           node-version: 20
 
       - name: Install Newman
-        run: npm install -g newman
+        # Install Newman and the HTML reporter so we can produce an HTML report
+        run: npm install -g newman newman-reporter-html
 
-      - name: Run Postman Tests
+      - name: Run Postman Tests (produce HTML report)
+        env:
+          # Allow CI to override base URL via secrets if configured
+          BASE_URL: ${{ secrets.BASE_URL }}
         run: |
           # Run the exported Postman collection once using the QA environment
+          # Produce both CLI output and an HTML report for easy review.
           newman run ./postman/collections/DummyJSON_Regression_Collection.json \
-            -e ./postman/environments/DummyJSON_QA_Environment.json
+            -e ./postman/environments/DummyJSON_QA_Environment.json \
+            -r cli,html --reporter-html-export newman-report.html || true
+
+      - name: Upload Newman HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: newman-report.html
       # Run API regression coverage with Newman using the exported Postman collection and environment.
       # NOTE: Postman/Newman was running inside the matrix which caused it
       # to execute once per browser (duplicate runs). This step was removed
