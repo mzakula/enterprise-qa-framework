@@ -41,9 +41,12 @@ module.exports = defineConfig({
 
     screenshot: 'only-on-failure',
 
-    video: 'retain-on-failure',
+    // Video and trace artifacts are expensive to generate and store.
+    // Only record them on the first retry to preserve debugging data
+    // for flaky failures, while keeping successful runs fast.
+    video: 'on-first-retry',
 
-    trace: 'retain-on-failure'
+    trace: 'on-first-retry'
   },
 
   reporter: [

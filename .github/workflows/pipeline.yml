@@ -44,7 +44,17 @@ jobs:
         # Use `npm ci` for reproducible installs in CI and faster execution
         run: npm ci --prefer-offline --no-audit --no-progress
 
-      # Step 4: Installs the actual browser binaries required by Playwright
+      # Step 4: Cache Playwright browser binaries to speed up repeated CI runs.
+      # This saves time when Playwright restarts on a fresh runner for each matrix job.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browser-cache-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-browser-cache-${{ runner.os }}-
+
+      # Step 5: Installs the actual browser binaries required by Playwright
       # The '--with-deps' flag tells it to also install any missing operating system dependencies
       - name: Install Browsers
         run: npx playwright install --with-deps
@@ -62,7 +72,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          BASE_URL: ${{ secrets.BASE_URL }}
+          BASE_URL: ${{ secrets.BASE_URL }}     
         # Run Playwright for the specific browser from the matrix so each job
         # only runs one browser (true matrix execution). This avoids duplicating
         # browser runs inside Playwright's own project list.
