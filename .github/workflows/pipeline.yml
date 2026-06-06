@@ -24,6 +24,19 @@ jobs:
         # This will spin up TWO separate, parallel jobs: one for chromium, one for firefox.
         browser: [chromium, firefox]
 
+        # Enterprise-ready note: a fuller matrix can include Node versions too.
+        # This is useful when you want compatibility validation across runtimes.
+        # Example:
+        #   matrix:
+        #     node: [20, 22]
+        #     browser: [chromium, firefox]
+        # Produces:
+        #   Node20 Chromium
+        #   Node20 Firefox
+        #   Node22 Chromium
+        #   Node22 Firefox
+        # Use this pattern when your project is expected to support multiple Node LTS versions.
+
     # The sequence of tasks (steps) to be executed in this job
     steps:
 
@@ -38,6 +51,11 @@ jobs:
           node-version: 20
           # Use built-in npm caching to speed up dependency installs across runs
           cache: 'npm'
+          # Enterprise note: caching packages reduces CI minutes and improves workflow consistency.
+          # Alternative matrix-aware setup could include Node version axes:
+          #   matrix:
+          #     node: [20, 22]
+          #     browser: [chromium, firefox]
 
       # Step 3: Installs the project dependencies listed in your package.json file
       - name: Install Dependencies
@@ -46,6 +64,7 @@ jobs:
 
       # Step 4: Cache Playwright browser binaries to speed up repeated CI runs.
       # This saves time when Playwright restarts on a fresh runner for each matrix job.
+      # The cache key is tied to the OS and package-lock file to avoid stale browser artifacts.
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
@@ -54,29 +73,24 @@ jobs:
           restore-keys: |
             playwright-browser-cache-${{ runner.os }}-
 
-      # Step 5: Installs only the browser needed for this matrix axis.
-      # This avoids installing all Playwright browsers in every matrix job,
-      # which is a common CI slowdown for browser-specific test runs.
+      # Step 5: Install only the browser required for this matrix axis.
+      # Installing just `chromium` or `firefox` instead of the full browser suite
+      # reduces CI setup time for browser-specific matrix jobs.
       - name: Install Browser
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       # Step 6: Executes your Playwright test suite
-      # Because of the matrix strategy above, Playwright will automatically target the correct browser
-      # Forward DB secrets into Playwright so the database integration tests can connect when run in CI.
-      # These values must be configured in GitHub repo secrets under Settings -> Secrets.
+      # The matrix value is explicitly passed to Playwright so each job
+      # runs only one browser project, instead of running the full suite twice.
+      # Forward DB and environment secrets into the test run for CI reliability.
       - name: Run Tests
-        # Inject secrets and environment variables for CI runs.
-        # Also pass BASE_URL from secrets to avoid hard-coded endpoints in CI.
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          BASE_URL: ${{ secrets.BASE_URL }}     
-        # Run Playwright for the specific browser from the matrix so each job
-        # only runs one browser (true matrix execution). This avoids duplicating
-        # browser runs inside Playwright's own project list.
+          BASE_URL: ${{ secrets.BASE_URL }}
         run: |
           npx playwright test --project=${{ matrix.browser }}
 
