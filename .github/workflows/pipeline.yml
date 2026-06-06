@@ -54,12 +54,13 @@ jobs:
           restore-keys: |
             playwright-browser-cache-${{ runner.os }}-
 
-      # Step 5: Installs the actual browser binaries required by Playwright
-      # The '--with-deps' flag tells it to also install any missing operating system dependencies
-      - name: Install Browsers
-        run: npx playwright install --with-deps
+      # Step 5: Installs only the browser needed for this matrix axis.
+      # This avoids installing all Playwright browsers in every matrix job,
+      # which is a common CI slowdown for browser-specific test runs.
+      - name: Install Browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      # Step 5: Executes your Playwright test suite
+      # Step 6: Executes your Playwright test suite
       # Because of the matrix strategy above, Playwright will automatically target the correct browser
       # Forward DB secrets into Playwright so the database integration tests can connect when run in CI.
       # These values must be configured in GitHub repo secrets under Settings -> Secrets.
