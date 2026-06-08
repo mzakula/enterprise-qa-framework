@@ -16,6 +16,15 @@ async function connectDB() {
   await client.connect();
 }
 
+async function closeDB() {
+  try {
+    await client.end();
+  } catch (err) {
+    // swallow errors during close to avoid masking test failures
+    console.error('Error closing DB client', err);
+  }
+}
+
 async function executeQuery(query) {
   const result = await client.query(query);
   return result.rows;
@@ -23,5 +32,7 @@ async function executeQuery(query) {
 
 module.exports = {
   connectDB,
-  executeQuery
+  executeQuery,
+  // CHANGED: Exported `closeDB` so tests can explicitly close the connection
+  closeDB
 };
