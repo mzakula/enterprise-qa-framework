@@ -25,8 +25,8 @@ async function closeDB() {
   }
 }
 
-async function executeQuery(query) {
-  const result = await client.query(query);
+async function executeQuery(query, params = []) {
+  const result = await client.query(query, params);
   return result.rows;
 }
 

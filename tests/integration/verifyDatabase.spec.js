@@ -24,7 +24,7 @@ test.describe('Database validation', () => {
     await closeDB();
   });
 
-  test('should verify the `products` table exists in the database', async () => {
+  test('should insert, update, and verify a test product in the database', async () => {
     if (!hasDbConfig) {
       // Intentional pass when DB is not configured for this environment.
       // This keeps CI and local runs stable when a database is not available.
@@ -32,20 +32,45 @@ test.describe('Database validation', () => {
       return;
     }
 
-    // CHANGED: Use an existence check against `information_schema` to deterministically
-    // verify the table exists regardless of whether it currently contains rows.
+    const testTitle = `QA Test Product ${Date.now()}`;
+    const initialPrice = 19.95;
+    const updatedPrice = 24.95;
+
+    // CHANGED: This test now validates a real product lifecycle against the DB:
+    // insert a row, update it, verify the change, and roll back the transaction.
     try {
-      const rows = await executeQuery(
-        "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema='public' AND table_name='products') AS exists"
+      await executeQuery('BEGIN');
+
+      const insertRows = await executeQuery(
+        'INSERT INTO products (title, price) VALUES ($1, $2) RETURNING id, title, price',
+        [testTitle, initialPrice]
       );
 
-      expect(Array.isArray(rows)).toBe(true);
-      expect(rows.length).toBe(1);
-      // `rows[0].exists` should be true when the table is present.
-      expect(rows[0].exists).toBe(true);
+      expect(insertRows.length).toBe(1);
+      const inserted = insertRows[0];
+      expect(inserted.title).toBe(testTitle);
+      expect(Number(inserted.price)).toBe(initialPrice);
+
+      await executeQuery('UPDATE products SET price = $1 WHERE id = $2', [updatedPrice, inserted.id]);
+
+      const selectRows = await executeQuery(
+        'SELECT id, title, price FROM products WHERE id = $1',
+        [inserted.id]
+      );
+
+      expect(selectRows.length).toBe(1);
+      expect(selectRows[0].title).toBe(testTitle);
+      expect(Number(selectRows[0].price)).toBe(updatedPrice);
     } catch (err) {
       // Surface a clear error message to make CI debugging easier.
-      throw new Error(`Database validation query failed: ${err.message}`);
+      throw new Error(`Database validation CRUD workflow failed: ${err.message}`);
+    } finally {
+      // Ensure the transaction is rolled back even if an assertion fails.
+      try {
+        await executeQuery('ROLLBACK');
+      } catch (rollbackErr) {
+        console.error('Rollback failed after DB test', rollbackErr);
+      }
     }
   });
 });
