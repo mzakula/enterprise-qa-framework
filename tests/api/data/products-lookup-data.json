@@ -1,0 +1,20 @@
+{
+  "_comment": "This JSON fixture contains data-driven lookup cases for the products API test. It is intentionally a valid JSON object with a reserved _comment property so the file can remain machine-readable while documenting purpose.",
+  "cases": [
+    {
+      "id": 1,
+      "expectedTitle": "Essence Mascara Lash Princess",
+      "expectedPrice": 9.99
+    },
+    {
+      "id": 2,
+      "expectedTitle": "Eyeshadow Palette with Mirror",
+      "expectedPrice": 19.99
+    },
+    {
+      "id": 3,
+      "expectedTitle": "Powder Canister",
+      "expectedPrice": 14.99
+    }
+  ]
+}
