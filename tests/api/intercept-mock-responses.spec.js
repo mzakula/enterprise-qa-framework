@@ -82,7 +82,9 @@ test.describe('API interception and mock response examples', () => {
       }
     });
 
-    expect(errorMessage.toLowerCase()).toContain('failed');
+    // Firefox and Chromium surface different fetch error messages for aborted requests.
+    // Accept the common network-failure variants rather than a single browser-specific phrase.
+    expect(errorMessage.toLowerCase()).toMatch(/failed|networkerror|timedout/);
   });
 
   test('should mock a server error response', async ({ page }) => {
