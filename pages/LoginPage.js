@@ -14,6 +14,10 @@ class LoginPage {
     await this.page.goto('/');
   }
 
+  async navigateToInventory() {
+    await this.page.goto('/inventory.html');
+  }
+
   async login(username, password) {
 
     await this.page.fill(this.usernameInput, username);

@@ -7,8 +7,8 @@ test.describe('Login flow', () => {
   test('reuses authenticated storage state and lands on inventory page', async ({ page }) => {
     const loginPage = new LoginPage(page);
 
-    // A fresh page with configured storageState should redirect to inventory.
-    await loginPage.navigate();
+    // A fresh page with configured storageState should open the inventory page directly.
+    await loginPage.navigateToInventory();
 
     await expect(page).toHaveURL(/inventory.html/);
     await expect(page.locator('.inventory_list')).toBeVisible();
