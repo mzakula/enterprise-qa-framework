@@ -1,3 +1,5 @@
+FROM mcr.microsoft.com/playwright:v1.60.0-jammy
+
 # Copy package files first for Docker layer caching
 COPY package*.json ./
 

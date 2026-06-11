@@ -8,5 +8,6 @@ node_modules/
 /playwright/.auth/
 /auth/
 .env
+allure-results/
 # Local AI / interview notes that should not be published
 ai-testing/interview-framework-guide.md

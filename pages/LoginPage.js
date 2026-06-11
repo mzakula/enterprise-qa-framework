@@ -4,9 +4,10 @@ class LoginPage {
   constructor(page) {
     this.page = page;
 
-    this.usernameInput = '#user-name';
-    this.passwordInput = '#password';
-    this.loginButton = '#login-button';
+    this.usernameInput = '[data-test="username"]';
+    this.passwordInput = '[data-test="password"]';
+    this.loginButton = '[data-test="login-button"]';
+    this.errorMessage = '[data-test="error"]';
   }
 
   async navigate() {

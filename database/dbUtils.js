@@ -2,9 +2,10 @@
 // The connection parameters are env-driven so test execution can support multiple environments.
 // Local development can use .env, while CI should set real secrets through the runner environment.
 require('dotenv').config();
-const { Client } = require('pg');
+const { Pool } = require('pg');
+const logger = require('../utils/logger');
 
-const client = new Client({
+const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || 'admin',
@@ -13,20 +14,21 @@ const client = new Client({
 });
 
 async function connectDB() {
-  await client.connect();
+  const client = await pool.connect();
+  client.release();
 }
 
 async function closeDB() {
   try {
-    await client.end();
+    await pool.end();
   } catch (err) {
-    // swallow errors during close to avoid masking test failures
-    console.error('Error closing DB client', err);
+    // Log errors during close without masking test failures.
+    logger.error('Error closing DB pool', { error: err });
   }
 }
 
 async function executeQuery(query, params = []) {
-  const result = await client.query(query, params);
+  const result = await pool.query(query, params);
   return result.rows;
 }
 
