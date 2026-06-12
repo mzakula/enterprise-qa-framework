@@ -14,8 +14,13 @@ const pool = new Pool({
 });
 
 async function connectDB() {
-  const client = await pool.connect();
-  client.release();
+  try {
+    const client = await pool.connect();
+    client.release();
+  } catch (err) {
+    logger.error('Failed to connect to database', { error: err.message, stack: err.stack });
+    throw err;
+  }
 }
 
 async function closeDB() {
@@ -28,8 +33,13 @@ async function closeDB() {
 }
 
 async function executeQuery(query, params = []) {
-  const result = await pool.query(query, params);
-  return result.rows;
+  try {
+    const result = await pool.query(query, params);
+    return result.rows;
+  } catch (err) {
+    logger.error('Query execution failed', { query, error: err.message, stack: err.stack });
+    throw err;
+  }
 }
 
 module.exports = {

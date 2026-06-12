@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { connectDB, executeQuery, closeDB } = require('../../database/dbUtils');
+const logger = require('../../utils/logger');
 
 // Only execute database validations when the environment provides DB credentials.
 // This prevents CI/local runs without a database from failing due to optional infrastructure.
@@ -46,12 +47,12 @@ describeDb('Database validation', () => {
       expect(selectRows[0].title).toBe(testTitle);
       expect(Number(selectRows[0].price)).toBe(updatedPrice);
     } catch (err) {
-      throw new Error(`Database validation CRUD workflow failed: ${err.message}`);
+      throw new Error(`Database validation CRUD workflow failed: ${err.message}`, { cause: err });
     } finally {
       try {
         await executeQuery('ROLLBACK');
       } catch (rollbackErr) {
-        console.error('Rollback failed after DB test', rollbackErr);
+        logger.error('Rollback failed after DB test', { error: rollbackErr.message, stack: rollbackErr.stack });
       }
     }
   });

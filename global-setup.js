@@ -74,14 +74,14 @@ async function globalSetup() {
 
   } catch (error) {
     logger.error('[Global Setup] Failed to authenticate:', { message: error.message, stack: error.stack });
-    
-    // If authentication fails but auth.json already exists, continue
-    // This allows tests to run with potentially stale auth state.
-    if (!fs.existsSync(authFile)) {
-      // If no existing auth.json exists, this is a hard failure.
-      throw error;
+
+    // Only fall back to stale auth when explicitly opted in via ALLOW_STALE_AUTH.
+    // Without the opt-in the error propagates immediately so test failures
+    // point at the real root cause instead of confusing stale-state symptoms.
+    if (fs.existsSync(authFile) && process.env.ALLOW_STALE_AUTH === 'true') {
+      logger.warn('[Global Setup] ALLOW_STALE_AUTH is set — continuing with existing auth.json. Auth may be outdated.');
     } else {
-      logger.warn('[Global Setup] Using existing auth.json - setup may be outdated');
+      throw error;
     }
   }
 }
