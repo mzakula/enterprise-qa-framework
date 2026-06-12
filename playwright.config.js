@@ -1,5 +1,5 @@
 const { defineConfig } = require('@playwright/test');
-require('dotenv').config();
+const { baseURL } = require('./utils/testConfig');
 
 // Enterprise-grade Playwright configuration for QA automation framework.
 // This config balances speed, reliability, and maintainability across local and CI environments.
@@ -30,7 +30,7 @@ module.exports = defineConfig({
   outputDir: 'test-results',
 
   use: {
-    baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
+    baseURL,
 
     // Storage State: Persist authenticated browser state to avoid repeated logins.
     // Each test starts with a pre-authenticated session from auth/auth.json (populated by global-setup).

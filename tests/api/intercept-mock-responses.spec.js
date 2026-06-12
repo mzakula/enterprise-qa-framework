@@ -1,25 +1,16 @@
 const { test, expect } = require('@playwright/test');
-
-// This test demonstrates simple Playwright route interception and mock responses.
-// It is intentionally implemented as a browser-level intercept because Playwright
-// mocks HTTP traffic through page routing, even for API-only validation.
-// The three scenarios are implemented in the `page.route` handler below:
-// 1) `GET https://dummyjson.com/products/999` returns a negative API response body with success=false.
-// 2) `GET https://dummyjson.com/posts/1?simulate=timeout` triggers a mocked network timeout.
-// 3) `GET https://dummyjson.com/users/1` returns a mocked 500 server error.
+const { apiBaseURL } = require('../../utils/testConfig');
+const { fetchViaPage, fetchErrorViaPage } = require('../../utils/apiHelper');
 
 test.describe('API interception and mock response examples', () => {
   test.beforeEach(async ({ page }) => {
-    await page.route('https://dummyjson.com/**', async (route) => {
+    await page.route(`${apiBaseURL}/**`, async (route) => {
       const url = route.request().url();
 
-      // Scenario 1: negative application-level API response body.
       if (url.endsWith('/products/999')) {
         return route.fulfill({
           status: 200,
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             success: false,
             message: 'Product not found',
@@ -28,18 +19,14 @@ test.describe('API interception and mock response examples', () => {
         });
       }
 
-      // Scenario 2: mocked network timeout on the request.
       if (url.includes('/posts/1?simulate=timeout')) {
         return route.abort('timedout');
       }
 
-      // Scenario 3: mocked server-side 500 error response.
       if (url.endsWith('/users/1')) {
         return route.fulfill({
           status: 500,
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             error: 'Server error',
             detail: 'Mocked internal server failure'
@@ -52,17 +39,7 @@ test.describe('API interception and mock response examples', () => {
   });
 
   test('should mock a negative API response body', async ({ page }) => {
-    await page.goto('about:blank');
-
-    const payload = await page.evaluate(async () => {
-      const response = await fetch('https://dummyjson.com/products/999');
-      const body = await response.json();
-      return {
-        status: response.status,
-        ok: response.ok,
-        body
-      };
-    });
+    const payload = await fetchViaPage(page, `${apiBaseURL}/products/999`);
 
     expect(payload.status).toBe(200);
     expect(payload.ok).toBe(true);
@@ -71,33 +48,13 @@ test.describe('API interception and mock response examples', () => {
   });
 
   test('should mock a network timeout failure', async ({ page }) => {
-    await page.goto('about:blank');
+    const errorMessage = await fetchErrorViaPage(page, `${apiBaseURL}/posts/1?simulate=timeout`);
 
-    const errorMessage = await page.evaluate(async () => {
-      try {
-        await fetch('https://dummyjson.com/posts/1?simulate=timeout');
-        return 'NO ERROR';
-      } catch (error) {
-        return error.message;
-      }
-    });
-
-    // Firefox and Chromium surface different fetch error messages for aborted requests.
-    // Accept the common network-failure variants rather than a single browser-specific phrase.
     expect(errorMessage.toLowerCase()).toMatch(/failed|networkerror|timedout/);
   });
 
   test('should mock a server error response', async ({ page }) => {
-    await page.goto('about:blank');
-
-    const payload = await page.evaluate(async () => {
-      const response = await fetch('https://dummyjson.com/users/1');
-      return {
-        status: response.status,
-        ok: response.ok,
-        body: await response.json()
-      };
-    });
+    const payload = await fetchViaPage(page, `${apiBaseURL}/users/1`);
 
     expect(payload.status).toBe(500);
     expect(payload.ok).toBe(false);

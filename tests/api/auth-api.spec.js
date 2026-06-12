@@ -1,9 +1,8 @@
-﻿const { test, expect } = require('@playwright/test');
+const { test, expect } = require('@playwright/test');
+const { apiBaseURL } = require('../../utils/testConfig');
 
-// Negative API coverage: verify the authentication endpoint rejects invalid credentials.
-// This prevents false positive behavior where a bad login could accidentally return success.
 test('Rejects invalid authentication credentials', async ({ request }) => {
-  const response = await request.post('https://dummyjson.com/auth/login', {
+  const response = await request.post(`${apiBaseURL}/auth/login`, {
     data: {
       username: 'invalid_user',
       password: 'wrong_password'
