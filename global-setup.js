@@ -73,7 +73,7 @@ async function globalSetup() {
     logger.info('[Global Setup] Setup complete');
 
   } catch (error) {
-    logger.error('[Global Setup] Failed to authenticate:', { message: error.message, stack: error.stack });
+    logger.error('[Global Setup] Failed to authenticate:', { message: error.message });
     
     // If authentication fails but auth.json already exists, continue
     // This allows tests to run with potentially stale auth state.

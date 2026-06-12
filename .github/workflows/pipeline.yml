@@ -146,13 +146,12 @@ jobs:
 
       - name: Run Postman Tests (produce HTML report)
         env:
-          # Allow CI to override base URL via secrets if configured
           BASE_URL: ${{ secrets.BASE_URL }}
         run: |
-          # Run the exported Postman collection once using the QA environment
-          # Produce both CLI output and an HTML report for easy review.
           newman run ./postman/collections/DummyJSON_Regression_Collection.json \
             -e ./postman/environments/DummyJSON_QA_Environment.json \
+            --env-var "username=${{ secrets.NEWMAN_USERNAME }}" \
+            --env-var "password=${{ secrets.NEWMAN_PASSWORD }}" \
             -r cli,html --reporter-html-export newman-report.html || true
 
       - name: Upload Newman HTML Report

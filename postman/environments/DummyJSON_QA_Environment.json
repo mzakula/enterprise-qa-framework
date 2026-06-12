@@ -10,15 +10,15 @@
     },
     {
       "key": "username",
-      "value": "emilys",
+      "value": "",
       "enabled": true,
-      "description": "Test account username used for authentication."
+      "description": "Test account username. Override via Newman --env-var or set before running."
     },
     {
       "key": "password",
-      "value": "emilyspass",
+      "value": "",
       "enabled": true,
-      "description": "Test account password used for authentication."
+      "description": "Test account password. Override via Newman --env-var or set before running."
     },
     {
       "key": "token",

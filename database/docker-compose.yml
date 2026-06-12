@@ -5,9 +5,9 @@ services:
     image: postgres:15
 
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: automation
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      POSTGRES_DB: ${DB_NAME:-automation}
 
     ports:
       - "5432:5432"
