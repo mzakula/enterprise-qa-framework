@@ -1,0 +1,11 @@
+Prompt sent to Claude Sonnet:
+
+"You are a senior QA engineer. Given this Sauce Demo checkout flow:
+- User adds a product to cart
+- User navigates to cart
+- User clicks Checkout
+- User fills in First Name, Last Name, Postal Code
+- User clicks Continue then Finish
+
+Generate negative test scenarios covering: empty fields, invalid
+postal codes, navigation back/forward edge cases, and session expiry."
