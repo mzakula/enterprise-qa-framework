@@ -1,16 +1,18 @@
 const { expect } = require('@playwright/test');
+const BasePage = require('./BasePage');
 
-// Inventory page object: encapsulates the product browsing and cart entry experience.
-class InventoryPage {
+class InventoryPage extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
 
     this.inventoryList = '.inventory_list';
-    this.cartLink = '.shopping_cart_link';
+    this.cartLink      = '.shopping_cart_link';
   }
 
   async navigate() {
     await this.page.goto('/inventory.html');
+    await this.waitForPageLoad();
+    await this.logNavigation('inventory');
     await expect(this.page).toHaveURL(/inventory.html/);
     await expect(this.page.locator(this.inventoryList)).toBeVisible();
   }
@@ -21,6 +23,7 @@ class InventoryPage {
 
   async openCart() {
     await this.page.click(this.cartLink);
+    await this.logNavigation('cart');
   }
 }
 

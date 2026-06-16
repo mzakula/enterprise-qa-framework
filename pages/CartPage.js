@@ -1,12 +1,15 @@
-// Cart page object: encapsulates actions available from the shopping cart review.
-class CartPage {
+const BasePage = require('./BasePage');
+
+class CartPage extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
+
     this.checkoutButton = '[data-test="checkout"]';
   }
 
   async startCheckout() {
     await this.page.click(this.checkoutButton);
+    await this.logNavigation('checkout step 1');
   }
 }
 
