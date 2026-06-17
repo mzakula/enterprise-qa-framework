@@ -14,8 +14,14 @@ const pool = new Pool({
 });
 
 async function connectDB() {
-  const client = await pool.connect();
-  client.release();
+  try {
+    const client = await pool.connect();
+    client.release();
+    logger.info('[DB] Pool connection verified successfully');
+  } catch (err) {
+    logger.error('[DB] Failed to connect to database pool', { error: err.message });
+    throw err;
+  }
 }
 
 async function closeDB() {
@@ -35,6 +41,6 @@ async function executeQuery(query, params = []) {
 module.exports = {
   connectDB,
   executeQuery,
-  // CHANGED: Exported `closeDB` so tests can explicitly close the connection
+  // Exported so test suites can drain the pool explicitly in afterAll hooks
   closeDB
 };
