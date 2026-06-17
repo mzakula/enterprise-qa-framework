@@ -1,93 +1,153 @@
 # Enterprise QA Automation Framework
 
-Enterprise-level automation framework built using Playwright and JavaScript with integrated API testing, PostgreSQL database validation, Dockerized execution, CI/CD pipelines, and AI-assisted testing workflows.
+Enterprise-level automation framework built using Playwright and JavaScript with integrated API testing, PostgreSQL database validation, Dockerised execution, CI/CD pipelines, and AI-assisted testing workflows.
 
 ## Key Features
 
-* UI Automation with Playwright
-* API Automation Testing
-* PostgreSQL Database Validation
-* Docker Support
-* GitHub Actions CI/CD
-* Allure & HTML Reporting
-* Parallel Execution
-* Retry Mechanism
-* AI-Augmented Testing
-* Cross-Browser Testing
+* UI automation with Playwright and Page Object Model
+* API contract and integration testing
+* PostgreSQL database validation with transaction rollback
+* Dockerised test execution
+* GitHub Actions CI/CD with browser matrix
+* Allure and HTML reporting
+* Parallel execution across Chromium and Firefox
+* Automatic retry on CI flakiness
+* AI-augmented test design workflow
+* Cross-browser testing
 
 ## Architecture
 
-Playwright UI
-      ↓
-Playwright API
-      ↓
-PostgreSQL
-      ↓
-Reports
-      ↓
-GitHub Actions
+```mermaid
+graph TD
+    GS[global-setup.js\nauthenticates once] --> CONFIG[playwright.config.js\nstorageState + retries + workers]
+
+    CONFIG --> UI[tests/ui\nLoginPage · InventoryPage\nCartPage · CheckoutPage]
+    CONFIG --> API[tests/api\ncontract · data-driven\nroute interception]
+    CONFIG --> INT[tests/integration\nAPI + DB · UI sanity]
+
+    UI --> POM[pages/BasePage\n↳ LoginPage\n↳ InventoryPage\n↳ CartPage · CheckoutPage]
+    INT --> DB[(PostgreSQL\nvia pg.Pool)]
+
+    CONFIG --> RPT[Reports\nAllure · HTML · Winston log]
+    RPT --> CI[GitHub Actions\nChromium + Firefox matrix\nNewman job]
+```
 
 ## Technologies
 
-* Playwright
-* JavaScript
-* PostgreSQL
-* Docker
-* GitHub Actions
-* Postman
-* Newman
-* Allure Reports
-* GitHub Copilot
-* Claude
-* ChatGPT
+| Layer | Tool |
+|---|---|
+| Test runner | Playwright |
+| Language | JavaScript (CommonJS) |
+| Database | PostgreSQL via `pg` |
+| Containerisation | Docker |
+| CI/CD | GitHub Actions |
+| API collections | Postman + Newman |
+| Reporting | Allure + Playwright HTML |
+| Logging | Winston |
+| AI-assisted design | GitHub Copilot · Claude · ChatGPT |
+
+AI tools were used for test scenario generation, edge-case discovery, and Gherkin authoring — see [`ai-testing/`](./ai-testing/README.md) for the full workflow. Engineering judgment is responsible for all final implementation and validation decisions.
 
 ## Setup
 
-1. Install dependencies:
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Copy the environment template:
+### 2. Copy environment template
 
 ```bash
+# Mac / Linux
+cp .env.example .env
+
+# Windows (Command Prompt)
 copy .env.example .env
 ```
 
-3. Set `BASE_URL` to your target application or leave the default for the sample Sauce Demo flow.
+### 3. Edit `.env`
+
+Set `BASE_URL` to your target application, or leave the default (`https://www.saucedemo.com`) to run the sample Sauce Demo flow. Fill in `DB_*` values only if you want to run database integration tests locally.
 
 ## Run tests
 
 ```bash
+# All tests
 npm test
+
+# By layer
 npm run test:ui
 npm run test:api
 npm run test:integration
+
+# Postman/Newman collection
+npm run newman
+```
+
+## Run with Docker
+
+```bash
+# Build the image
+docker build -t enterprise-qa .
+
+# Run all tests inside the container
+docker run --rm enterprise-qa
+
+# Run a specific layer
+docker run --rm enterprise-qa npx playwright test tests/api
+```
+
+## Run the database locally
+
+```bash
+# Start a local PostgreSQL instance using Docker Compose
+docker-compose -f database/docker-compose.yml up -d
+
+# Apply schema and seed data
+psql -h localhost -U admin -d automation -f database/schema.sql
+psql -h localhost -U admin -d automation -f database/seed.sql
+```
+
+## Reports
+
+### Playwright HTML report
+```bash
+# Open the last HTML report
+npm run report
+```
+
+### Allure report
+```bash
+# Generate the report from raw results
+npm run allure:generate
+
+# Open in browser
+npm run allure:open
 ```
 
 ## Framework Design Decisions
 
 ### Why Playwright?
 
-Playwright was selected because it provides reliable cross-browser automation, automatic waiting mechanisms, network interception, API testing capabilities, and parallel execution support. Compared to traditional Selenium implementations, Playwright significantly reduces flaky tests and simplifies modern web application testing.
+Playwright provides reliable cross-browser automation, automatic waiting mechanisms, network interception, native API testing via `request` fixtures, and parallel execution. Compared to Selenium, it significantly reduces flaky tests and simplifies modern web application testing.
 
-Why PostgreSQL?
+### Why PostgreSQL?
 
-PostgreSQL was selected because it is one of the most widely used enterprise relational databases. Database validation allows verification of backend data persistence and consistency, ensuring that API and UI actions correctly affect the underlying data layer.
+PostgreSQL is one of the most widely used enterprise relational databases. Database validation allows verification that API and UI actions correctly persist data to the underlying storage layer — something UI assertions alone cannot confirm.
 
-Why Docker?
+### Why Docker?
 
-Docker provides a consistent and reproducible execution environment across developer machines and CI/CD pipelines. By containerizing dependencies, tests can run reliably regardless of operating system or local configuration.
+Docker provides a consistent, reproducible execution environment across developer machines and CI/CD runners. By containerising all dependencies, tests produce identical results regardless of operating system or local configuration.
 
-Why GitHub Actions?
+### Why GitHub Actions?
 
-GitHub Actions enables automated execution of test suites on every code change. It provides fast feedback, integrates directly with source control workflows, and allows automated quality gates before deployment.
+GitHub Actions enables automated test execution on every push and pull request. It integrates directly with source control, allows quality gates before merge, and provides per-run artifact storage for reports, traces, and logs.
 
-Why API + Database Validation?
+### Why API + database validation?
 
-UI validation alone does not guarantee data integrity. Combining API testing with database validation ensures that business processes work correctly throughout the entire application stack.
+UI validation alone does not guarantee data integrity. Combining API testing with database validation ensures that business processes are correct throughout the full application stack — from browser interaction through API response to persisted state.
 
-Why AI-Augmented Testing?
+### Why AI-augmented testing?
 
-AI tools such as GitHub Copilot, Claude, and ChatGPT accelerate repetitive engineering tasks including test data generation, edge-case discovery, exploratory testing preparation, and Gherkin scenario creation. Engineering judgment remains responsible for final validation and risk assessment.
+AI tools such as GitHub Copilot, Claude, and ChatGPT accelerate repetitive engineering tasks including test data generation, edge-case discovery, exploratory testing preparation, and Gherkin scenario creation. Engineering judgment remains responsible for final validation and risk assessment. See [`ai-testing/`](./ai-testing/README.md) for the concrete workflow used in this project.

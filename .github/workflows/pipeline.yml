@@ -163,8 +163,4 @@ jobs:
         with:
           name: newman-report
           path: newman-report.html
-      # Run API regression coverage with Newman using the exported Postman collection and environment.
-      # NOTE: Postman/Newman was running inside the matrix which caused it
-      # to execute once per browser (duplicate runs). This step was removed
-      # from the matrix job and moved to a single dedicated `postman` job
-      # below so Newman runs only once after the Playwright matrix completes.
+   
