@@ -13,7 +13,14 @@ test.describe('Integration API tests', () => {
         description: 'Sample product created by integration test'
       }
     });
-
     expect([200, 201]).toContain(response.status());
+
+    // Verify the response body contains the echoed fields.
+    // DummyJSON returns a fake auto-incremented id on successful creation.
+    const body = await response.json();
+    expect(body.id).toBeDefined();
+    expect(body.title).toBe('Playwright Book');
+    expect(Number(body.price)).toBe(29.99);
   });
 });
+
