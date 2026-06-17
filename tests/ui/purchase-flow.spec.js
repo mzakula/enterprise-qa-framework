@@ -1,4 +1,4 @@
-const { test } = require('@playwright/test');
+const { test } = require('../fixtures/base.fixture');
 const InventoryPage = require('../../pages/InventoryPage');
 const CartPage = require('../../pages/CartPage');
 const CheckoutPage = require('../../pages/CheckoutPage');

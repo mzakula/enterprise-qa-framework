@@ -1,4 +1,4 @@
-﻿const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('../fixtures/base.fixture');
 const LoginPage = require('../../pages/LoginPage');
 
 // Helper: creates a fresh browser context with NO preloaded storageState.
