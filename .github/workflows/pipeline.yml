@@ -73,11 +73,11 @@ jobs:
           restore-keys: |
             playwright-browser-cache-${{ runner.os }}-
 
-      # Step 5: Install only the browser required for this matrix axis.
-      # Installing just `chromium` or `firefox` instead of the full browser suite
-      # reduces CI setup time for browser-specific matrix jobs.
-      - name: Install Browser
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+      # Step 5: Install browsers required for tests and global setup.
+      # `global-setup.js` launches Chromium to authenticate before any test project runs,
+      # so we must install Chromium even in the Firefox matrix axis.
+      - name: Install Browsers
+        run: npx playwright install --with-deps chromium firefox
 
       # Step 6: Executes your Playwright test suite
       # The matrix value is explicitly passed to Playwright so each job
