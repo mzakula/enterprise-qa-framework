@@ -1,6 +1,6 @@
 # Enterprise QA Automation Framework
 
-Enterprise-level automation framework built using Playwright and JavaScript with integrated API testing, PostgreSQL database validation, Dockerised execution, CI/CD pipelines, and AI-assisted testing workflows.
+Enterprise-level automation framework built using Playwright and JavaScript with integrated API testing, PostgreSQL database validation, Dockerised execution, CI/CD pipelines and AI-assisted testing workflows.
 
 ## Key Features
 
